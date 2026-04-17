@@ -4,9 +4,6 @@ const cron = require('node-cron');
 
 // 🔥 Create client
 const client = new Client({
-    authStrategy: new LocalAuth({
-        dataPath: './session'
-    }),
     puppeteer: {
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
