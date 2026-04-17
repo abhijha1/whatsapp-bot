@@ -12,9 +12,15 @@ const client = new Client({
 
 // 🔹 QR Code (prints once)
 client.on('qr', (qr) => {
-    console.log('================ QR CODE ================');
-    qrcode.generate(qr, { small: true });
-    console.log('========================================');
+    console.log('QR STRING:', qr);
+
+    const fs = require('fs');
+    const QRCode = require('qrcode');
+
+    QRCode.toFile('qr.png', qr, function (err) {
+        if (err) return console.log('QR Error:', err);
+        console.log('✅ QR saved as qr.png');
+    });
 });
 
 // 🔹 Ready
