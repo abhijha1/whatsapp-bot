@@ -1,4 +1,4 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const cron = require('node-cron');
 
@@ -10,16 +10,18 @@ const client = new Client({
     }
 });
 
-// 🔹 QR Code
+// 🔹 QR Code (prints once)
 client.on('qr', (qr) => {
-    console.log('QR RECEIVED:', qr);
+    console.log('================ QR CODE ================');
+    qrcode.generate(qr, { small: true });
+    console.log('========================================');
 });
 
 // 🔹 Ready
 client.on('ready', async () => {
     console.log('✅ Bot Ready!');
 
-    // 🔥 PRINT ALL GROUPS (first time only)
+    // 🔥 PRINT ALL GROUPS
     const chats = await client.getChats();
     chats.forEach(chat => {
         if (chat.isGroup) {
@@ -27,11 +29,26 @@ client.on('ready', async () => {
         }
     });
 
-    // 🔥 AUTO REMINDER (change group ID here)
+    // 🔥 AUTO REMINDER (change ID after first run)
     cron.schedule('0 10 * * *', () => {
         const groupId = "PASTE_YOUR_GROUP_ID@g.us";
         client.sendMessage(groupId, "📌 Daily Reminder: Update your tasks!");
     });
 });
 
+// 🔹 Error handling (VERY IMPORTANT)
+client.on('auth_failure', () => {
+    console.error('❌ Authentication failed');
+});
+
+client.on('disconnected', (reason) => {
+    console.log('⚠️ Client disconnected:', reason);
+});
+
+// 🔹 Start bot
 client.initialize();
+
+// 🔹 Keep alive logs
+setInterval(() => {
+    console.log("🚀 Bot running...");
+}, 30000);
